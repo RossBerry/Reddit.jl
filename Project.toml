@@ -1,0 +1,4 @@
+name = "Reddit"
+uuid = "27c6c700-beb4-11e9-0d5d-570238037c5a"
+authors = ["Kenneth Berry <rosskberry@gmail.com>"]
+version = "0.1.0"
