@@ -2,3 +2,9 @@ name = "Reddit"
 uuid = "27c6c700-beb4-11e9-0d5d-570238037c5a"
 authors = ["Kenneth Berry <rosskberry@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+ConfParser = "88353bc9-fd38-507d-a820-d3b43837d6b9"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"

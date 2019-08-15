@@ -1,5 +1,8 @@
 module Reddit
 
-greet() = print("Hello World!")
+using Revise
+using HTTP
+using TimeSeries
+using ConfParser
 
 end # module
