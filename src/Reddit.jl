@@ -5,4 +5,6 @@ using HTTP
 using TimeSeries
 using ConfParser
 
+include("utilities.jl")
+
 end # module
