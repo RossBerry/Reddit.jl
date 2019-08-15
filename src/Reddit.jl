@@ -5,6 +5,10 @@ using HTTP
 using TimeSeries
 using ConfParser
 
-include("utilities.jl")
+function readconfig()
+    conf = ConfParse("config/config.ini")
+    parse_conf!(conf)
+    return conf
+end
 
 end # module
