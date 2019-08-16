@@ -15,11 +15,11 @@ git-tree-sha1 = "9b21a2dfe51ba71fdc5688039075819196595367"
 uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
 version = "0.5.7"
 
-[[ConcreteAbstractions]]
-git-tree-sha1 = "d8f80f45c392222cb2f69d88e82e72a8ed804d1a"
+[[CompositeTypeInheritance]]
+git-tree-sha1 = "15e5e226cac18d71a83275aa2c8831df49620218"
 repo-rev = "master"
-repo-url = "https://github.com/kennethberry/ConcreteAbstractions.jl"
-uuid = "3211512c-c066-11e9-2aef-ffbb4619acb5"
+repo-url = "https://github.com/kennethberry/CompositeTypeInheritance.jl"
+uuid = "fb631ee0-c073-11e9-18d5-49ddc9d7c406"
 version = "0.1.0"
 
 [[ConfParser]]

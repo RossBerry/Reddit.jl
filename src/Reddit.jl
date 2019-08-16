@@ -14,7 +14,7 @@ using Revise
 using HTTP
 using ConfParser
 using JSON
-using ConcreteAbstractions
+using CompositeTypeInheritance
 import Base64.Base64EncodePipe
 
 const DEFAULT_INI = "config/config.ini"
