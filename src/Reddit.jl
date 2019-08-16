@@ -1,11 +1,12 @@
 module Reddit
 
-export Credentials,
+export AuthorizedCredentials,
+	   Credentials,
 	   credentials,
 	   checkusername,
 	   subscribers,
 	   token,
-	   token!,
+	   authorize,
 	   trending,
 	   userinfo
 
@@ -13,6 +14,7 @@ using Revise
 using HTTP
 using ConfParser
 using JSON
+using ConcreteAbstractions
 import Base64.Base64EncodePipe
 
 const DEFAULT_INI = "config/config.ini"
@@ -20,13 +22,23 @@ const REDDIT_URL = "https://www.reddit.com"
 const SHORT_URL = "https://redd.it"
 const OATH_URL = "https://oauth.reddit.com"
 
-mutable struct Credentials
+@base struct AbstractCredentials
     id::String
     secret::String
 	useragent::String
 	username::String
     password::String
-    token::String
+end
+
+@extend struct Credentials <: AbstractCredentials end
+
+@extend struct AuthorizedCredentials <: AbstractCredentials
+	token::String
+end
+
+# get token with Credentials & return AuthorizedCredentials with token
+function authorize(c::Credentials)
+	AuthorizedCredentials(c.id, c.secret, c.username, c.useragent, c.password, token(c))
 end
 
 # TODO Fix - not working
@@ -49,9 +61,7 @@ function credentials(name::AbstractString; config=DEFAULT_INI)
 	useragent = retrieve(conf, name, "user_agent")
 	username = retrieve(conf, name, "username")
     password = retrieve(conf, name, "password")
-	c = Credentials(id, secret, useragent, username, password, "")
-	token!(c)
-	return c
+	Credentials(id, secret, useragent, username, password)
 end
 
 # encode string to base64
@@ -65,17 +75,18 @@ function encode(s::AbstractString)
     String(take!(io))
 end
 
-# number of subscribers for subreddit referenced by name
+# get number of subscribers for subreddit by name
 function subscribers(sub::AbstractString)
 	resp = HTTP.get("https://www.reddit.com/r/"*sub*"/about.json")
 	JSON.parse(String(resp.body))["data"]["subscribers"]
 end
 
+# get token with Credentials
 function token(c::Credentials)
 	token(c.id, c.secret, c.username, c.password)
 end
 
-# get c token
+# get token with client_id, client_secret, username, and password
 function token(id::AbstractString, secret::AbstractString,
 	username::AbstractString, password::AbstractString)
 	auth = encode("$(id):$(secret)")
@@ -86,13 +97,8 @@ function token(id::AbstractString, secret::AbstractString,
 	JSON.parse(body)["access_token"]
 end
 
-# change c token
-function token!(c::Credentials)
-	c.token = token(c)
-end
-
 # return the identity information for user associated with c
-function userinfo(c::Credentials)
+function userinfo(c::AuthorizedCredentials)
 	resp = HTTP.request("GET", OATH_URL*"/api/v1/me",
 		["Authorization" => "bearer "*c.token,
 		"User-Agent" => c.useragent])
@@ -100,7 +106,7 @@ function userinfo(c::Credentials)
 	JSON.parse(body)
 end
 
-function userkarma(c::Credentials)
+function userkarma(c::AuthorizedCredentials)
 	resp = HTTP.request("GET", OATH_URL*"/api/v1/me/karma",
 		["Authorization" => "bearer "*c.token,
 		"User-Agent" => c.useragent])
@@ -109,7 +115,7 @@ function userkarma(c::Credentials)
 end
 
 # TODO Fix - Error 400 Bad Request
-# function trending(c::Credentials)
+# function trending(c::AuthorizedCredentials)
 # 	resp = HTTP.request("GET", OATH_URL*"/api/trending_subreddits",
 # 		["Authorization" => "bearer "*c.token,
 # 		"User-Agent" => c.useragent])
