@@ -15,6 +15,13 @@ git-tree-sha1 = "9b21a2dfe51ba71fdc5688039075819196595367"
 uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
 version = "0.5.7"
 
+[[ConcreteAbstractions]]
+git-tree-sha1 = "d8f80f45c392222cb2f69d88e82e72a8ed804d1a"
+repo-rev = "master"
+repo-url = "https://github.com/kennethberry/ConcreteAbstractions.jl"
+uuid = "3211512c-c066-11e9-2aef-ffbb4619acb5"
+version = "0.1.0"
+
 [[ConfParser]]
 git-tree-sha1 = "c7559d68defb3708c0e46df1158e21be86e04312"
 uuid = "88353bc9-fd38-507d-a820-d3b43837d6b9"
