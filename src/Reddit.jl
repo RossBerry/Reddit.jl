@@ -14,7 +14,7 @@ using Revise
 using HTTP
 using ConfParser
 using JSON
-using CompositeTypeInheritance
+using StructuralInheritance
 import Base64.Base64EncodePipe
 
 const DEFAULT_INI = "config/config.ini"
@@ -22,7 +22,7 @@ const REDDIT_URL = "https://www.reddit.com"
 const SHORT_URL = "https://redd.it"
 const OATH_URL = "https://oauth.reddit.com"
 
-@base struct AbstractCredentials
+@protostruct struct Credentials
     id::String
     secret::String
 	useragent::String
@@ -30,9 +30,7 @@ const OATH_URL = "https://oauth.reddit.com"
     password::String
 end
 
-@extend struct Credentials <: AbstractCredentials end
-
-@extend struct AuthorizedCredentials <: AbstractCredentials
+@protostruct struct AuthorizedCredentials <: Credentials
 	token::String
 end
 
