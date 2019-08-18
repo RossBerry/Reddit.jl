@@ -1,4 +1,4 @@
-# Reddit
+# Reddit.jl
 Reddit API wrapper for Julia.
 
 ## Prerequisites
@@ -31,7 +31,14 @@ Credentials can be manually created with Strings entered into the fields:
 ```julia
 creds = Credentials("CLIENT_ID", "CLIENT_SECRET", "USER_AGENT", "USER_NAME", "PASSWORD")
 ```
-Credentials can also be generated from an `.ini` file. The default `config.ini` looks like:
+The `credentials()` function can be used to read account information from the default `config.ini` or a specified `.ini`.
+```julia
+# read credentials from default config.ini
+creds = credentials("client")
+# read credentials from an alternate ini
+creds = credentials("CLIENT_NAME", config="PATH/TO/ALTERNATE.ini")
+```
+The default `config.ini` looks like:
 ```
 [client]
 client_id=CLIENT_ID
@@ -40,25 +47,23 @@ user_agent=USER_AGENT
 password=PASSWORD
 username=USER_NAME
 ```
-The `credentials` function is used to read the specified client's fields from the default `config.ini` or a specified `.ini`:
-```julia
-# default config.ini
-creds = credentials("client")
-# alternate .ini
-creds = credentials("CLIENT_NAME", config="PATH/TO/ALTERNATE_CONFIG.ini")
-```
 
-Before accessing Reddit's API, we need to authorize the `Credentials` and recieve an access token.  We can use the `authorize` function on the `Credentials` to get back an `AuthorizedCredentials` type, which contains the same fields as `Credentials` with the addition of a `token` field.
+Before accessing Reddit's API, the `Credentials` need to be authorized to receive an access token.  The `authorize()` function can be used with the `Credentials` to get back an `AuthorizedCredentials` type, which contains the same fields as `Credentials` with the addition of a `token` field.
 ```julia
 authcreds = authorize(creds)
 ```
-The `token` function can also be called with `Credentials` to get the access token without creating `AuthorizedCredentials`.
+The `token()` function can also be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
 ```julia
 accesstoken = token(creds)
 ```
 The `AuthorizedCredentials` can then be used in the various API call functions:
 ```julia
-# get user identity information
-info = userinfo(authcreds)
-```
+# get current user identity information
+myinfo = me(authcreds)
 
+# get karma breakdown for current user
+mykarma = karma(authcreds)
+
+# get number of subscribers for /r/julia
+subcount = subscribers("Julia", authcreds)
+```
