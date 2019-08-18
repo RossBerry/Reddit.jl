@@ -9,7 +9,6 @@ ConfParser = "88353bc9-fd38-507d-a820-d3b43837d6b9"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
-StructuralInheritance = "eb3e9d2b-04dc-54b3-9584-49775b812a39"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [compat]
