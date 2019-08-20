@@ -16,10 +16,10 @@ Read more about user-agents at [Reddit’s API wiki page](https://github.com/red
 
 
 ## Installation
-This package is currently unregistered, so it must be installed with the repo URL.
+This package can be installed using Pkg:
 ```julia
 using Pkg
-Pkg.add(PackageSpec(url="https://github.com/kennethberry/Reddit.jl"))
+Pkg.add("Reddit")
 ```
 
 ## Project Status
@@ -59,7 +59,7 @@ user_agent=USER_AGENT_2
 password=PASSWORD_2
 username=USER_NAME_2
 ```
-The `credentials()` function can be used to generate Credentials from an ini file.
+The `credentials()` function can be used to generate `Credentials` from an ini file.
 ```julia
 # read credentials from default config.ini
 creds = credentials("client")
