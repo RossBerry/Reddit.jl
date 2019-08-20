@@ -2,9 +2,17 @@
 Reddit API wrapper for Julia.
 
 ## Prerequisites
-* Reddit account: A Reddit account is required to access Reddit's API.  Create one at [reddit.com](https://reddit.com).
-* Client ID & Client Secret: These two values are needed to access Reddit's API as a [script application](https://github.com/reddit-archive/reddit/wiki/oauth2-app-types#script), which is currently the only aplication type supported by this package. If you don’t already have a client ID and client secret, follow Reddit’s [First Steps Guide](https://github.com/reddit/reddit/wiki/OAuth2-Quick-Start-Example#first-steps) to create them.
-* User Agent: A user agent is a unique identifier that helps Reddit determine the source of network requests. To use Reddit’s API, you need a unique and descriptive user agent. The recommended format is `<platform>:<app ID>:<version string> (by /u/<Reddit username>)`.  For example, `android:com.example.myredditapp:v1.2.3 (by /u/kemitche)`. Read more about user-agents at [Reddit’s API wiki page](https://github.com/reddit/reddit/wiki/API).
+**Reddit account** - A Reddit account is required to access Reddit's API.  Create one at [reddit.com](https://reddit.com).
+
+**Client ID** & **Client Secret** - These two values are needed to access Reddit's API as a [script application](https://github.com/reddit-archive/reddit/wiki/oauth2-app-types#script), which is currently the only aplication type supported by this package. If you don’t already have a client ID and client secret, follow Reddit’s [First Steps Guide](https://github.com/reddit/reddit/wiki/OAuth2-Quick-Start-Example#first-steps) to create them.
+
+**User Agent** - A user agent is a unique identifier that helps Reddit determine the source of network requests. To use Reddit’s API, you need a unique and descriptive user agent.
+<br>
+The recommended format is: `<platform>:<app ID>:<version string> (by /u/<Reddit username>)`.
+<br>
+For example: `android:com.example.myredditapp:v1.2.3 (by /u/kemitche)`.
+<br>
+Read more about user-agents at [Reddit’s API wiki page](https://github.com/reddit/reddit/wiki/API).
 
 
 ## Installation
@@ -18,12 +26,16 @@ Pkg.add(PackageSpec(url="https://github.com/kennethberry/Reddit.jl"))
 This package is new and most of the planned functionality is yet to be implemented.
 
 ## Usage
-This package contains a `Credentials` type which contains the fields:
-* id::String
-* secret::String
-* useragent::String
-* username::String
-* password::String
+The `Reddit` module contains a `Credentials` type:
+```julia
+struct Credentials <: AbstractCredentials
+    id::String
+    secret::String
+    useragent::String
+    username::String
+    password::String
+end
+```
 
 The `id`, `secret`, and `useragent` fields correspond to the client ID, client secret, and user agent mentioned above in the prerequisites section. The `username` and `password` fields correspond to the username and password of the user associated with the script application.
 
@@ -31,28 +43,46 @@ Credentials can be manually created with Strings entered into the fields:
 ```julia
 creds = Credentials("CLIENT_ID", "CLIENT_SECRET", "USER_AGENT", "USER_NAME", "PASSWORD")
 ```
-The `credentials()` function can be used to read account information from the default `config.ini` or a specified `.ini`.
+The information required to create `Credentials` can be stored in an ini file. The default config file contains two clients named client1 and client2, with placeholders for each client's information.
+```
+[client1]
+client_id=CLIENT_ID_1
+client_secret=CLIENT_SECRET_1
+user_agent=USER_AGENT_1
+password=PASSWORD_1
+username=USER_NAME_1
+
+[client2]
+client_id=CLIENT_ID_2
+client_secret=CLIENT_SECRET_2
+user_agent=USER_AGENT_2
+password=PASSWORD_2
+username=USER_NAME_2
+```
+The `credentials()` function can be used to generate Credentials from an ini file.
 ```julia
 # read credentials from default config.ini
 creds = credentials("client")
+
 # read credentials from an alternate ini
-creds = credentials("CLIENT_NAME", config="PATH/TO/ALTERNATE.ini")
-```
-The default `config.ini` looks like:
-```
-[client]
-client_id=CLIENT_ID
-client_secret=CLIENT_SECRET
-user_agent=USER_AGENT
-password=PASSWORD
-username=USER_NAME
+creds = credentials("CLIENT_NAME", "PATH/TO/ALTERNATE.ini")
 ```
 
-Before accessing Reddit's API, the `Credentials` need to be authorized to receive an access token.  The `authorize()` function can be used with the `Credentials` to get back an `AuthorizedCredentials` type, which contains the same fields as `Credentials` with the addition of a `token` field.
+In order to access Reddit's API, the `Credentials` need to be authorized to receive an access token.  The `authorize()` function can be used with `Credentials` to get an `AuthorizedCredentials` type, which contains the same fields as `Credentials` with the addition of a `token` field.
+```julia
+struct AuthorizedCredentials <: AbstractCredentials
+    id::String
+    secret::String
+    useragent::String
+    username::String
+    password::String
+    token::String
+end
+```
 ```julia
 authcreds = authorize(creds)
 ```
-The `token()` function can also be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
+The `token()` function can be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
 ```julia
 accesstoken = token(creds)
 ```
