@@ -62,28 +62,49 @@ struct User
     name::String
 end
 
-# get information about current user
+"""
+    about(ac::AuthorizedCredentials)
+
+Get information about the current user.
+"""
 function about(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/about", ac))
 end
 
-# get information about a User
+"""
+    about(user::User, ac::AuthorizedCredentials)
+
+Get information about a specified user.
+"""
 function about(user::User, ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(user.name)/about", ac))
 end
 
-# get information about a Subreddit
+"""
+    about(sub::Subreddit, ac::AuthorizedCredentials)
+
+Get information about a specified subreddit.
+"""
 function about(sub::Subreddit, ac::AuthorizedCredentials)
     JSON.parse(get("/r/$(sub.name)/about", ac))
 end
 
-# get token with Credentials & return AuthorizedCredentials with token
+"""
+    authorize(c::Credentials)
+
+Use Credentials to request an acess token and return AuthorizedCredentials.
+"""
 function authorize(c::Credentials)
     AuthorizedCredentials(c.id, c.secret, c.useragent,
         c.username, c.password, token(c))
 end
 
-# get token with user details & return AuthorizedCredentials with token
+"""
+authorize(id::String, secret::String, useragent::String, username::String, password::String)
+
+Use reddit application account information to request an acess token and
+return AuthorizedCredentials.
+"""
 function authorize(id::AbstractString,
                    secret::AbstractString,
                    useragent::AbstractString,
@@ -93,23 +114,48 @@ function authorize(id::AbstractString,
                           token(id, secret, useragent, username, password))
 end
 
-# get users blocked by current user
+"""
+    blocked(ac::AuthorizedCredentials)
+
+Get users blocked by current user.
+"""
 function blocked(ac::AuthorizedCredentials)
     JSON.parse(get("/prefs/blocked", ac))
 end
 
-# get all comments by current user
+"""
+    comments(ac::AuthorizedCredentials)
+
+Get all comments by current user.
+"""
 function comments(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/comments", ac))
 end
 
-# get all comments by a user
+"""
+    comments(user::User, ac::AuthorizedCredentials)
+
+Get all comments by a user.
+"""
 function comments(user::User, ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(user.name)/comments", ac))
 end
 
-# create new Credentials from ini file
-function credentials(name::AbstractString; config=CONFIG)
+"""
+    credentials(name::AbstractString)
+
+Create new Credentials from the specified client in the default ini file.
+"""
+function credentials(name::AbstractString)
+    credentials(name, CONFIG)
+end
+
+"""
+    credentials(name::AbstractString, config::AbstractString)
+
+Create new Credentials from the specified client in the specified ini file.
+"""
+function credentials(name::AbstractString, config::AbstractString)
     conf = ConfParse(config)
     parse_conf!(conf)
     id = retrieve(conf, name, "client_id")
@@ -120,12 +166,20 @@ function credentials(name::AbstractString; config=CONFIG)
     Credentials(id, secret, useragent, username, password)
 end
 
-# get all threads a user has downvoted
+"""
+    downvoted(ac::AuthorizedCredentials)
+
+Get all threads a user has downvoted.
+"""
 function downvoted(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/downvoted", ac))
 end
 
-# encode string to base64
+"""
+    encode(s::AbstractString)
+
+Encode string to base64.
+"""
 function encode(s::AbstractString)
     io = IOBuffer()
     io64_encode = Base64EncodePipe(io)
@@ -136,92 +190,165 @@ function encode(s::AbstractString)
     String(take!(io))
 end
 
-# get friends of current user
+"""
+    friends(ac::AuthorizedCredentials)
+
+Get friends of current user.
+"""
 function friends(ac::AuthorizedCredentials)
     JSON.parse(get("/api/v1/me/friends", ac))
 end
 
-# send GET request to api
-function get(api::AbstractString, c::AuthorizedCredentials)
+"""
+    get(api::AbstractString, ac::AuthorizedCredentials)
+
+Send GET request to api.
+"""
+function get(api::AbstractString, ac::AuthorizedCredentials)
     resp = HTTP.request("GET", OATH_URL*api,
-        ["Authorization" => "bearer "*c.token,
-        "User-Agent" => c.useragent])
+        ["Authorization" => "bearer "*ac.token,
+        "User-Agent" => ac.useragent])
     String(resp.body)
 end
 
-# get all threads current user has gilded
+"""
+    gilded(ac::AuthorizedCredentials)
+
+Get all threads current user has gilded.
+"""
 function gilded(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/gilded", ac))
 end
 
-# get all threads a user has gilded
+"""
+    gilded(user::User, ac::AuthorizedCredentials)
+
+Get all threads a user has gilded.
+"""
 function gilded(user::User, ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(user.name)/gilded", ac))
 end
 
-# get all threads current user has hidden
+"""
+    hidden(ac::AuthorizedCredentials)
+
+Get all threads current user has hidden.
+"""
 function hidden(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/hidden", ac))
 end
 
-# get karma breakdown for current user
+"""
+    karma(ac::AuthorizedCredentials)
+
+Get karma breakdown for current user.
+"""
 function karma(ac::AuthorizedCredentials)
     JSON.parse(get("/api/v1/me/karma", ac))
 end
 
-# get identity information for current user
+"""
+    me(ac::AuthorizedCredentials)
+
+Get identity information for current user.
+"""
 function me(ac::AuthorizedCredentials)
     JSON.parse(get("/api/v1/me", ac))
 end
 
-# get an overview for current user
+"""
+    overview(ac::AuthorizedCredentials)
+
+Get an overview for current user.
+"""
 function overview(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/overview", ac))
 end
 
-# get an overview for a user
+"""
+    overview(user::User, ac::AuthorizedCredentials)
+
+Get an overview for a user.
+"""
 function overview(user::User, ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(user.name)/overview", ac))
 end
 
-# get all preferences for current user
-function overview(ac::AuthorizedCredentials)
+"""
+    preferences(ac::AuthorizedCredentials)
+
+Get all preferences for current user.
+"""
+function preferences(ac::AuthorizedCredentials)
     JSON.parse(get("/api/v1/me/prefs", ac))
 end
 
-# get all posts a user has saved
+"""
+    saved(ac::AuthorizedCredentials)
+
+Get all posts a user has saved.
+"""
 function saved(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/saved", ac))
 end
 
-# get all posts current user has submitted
+"""
+    submitted(ac::AuthorizedCredentials)
+
+Get all posts current user has submitted.
+"""
 function submitted(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/submitted", ac))
 end
 
-# get all posts a user has submitted
+"""
+    submitted(user::User, ac::AuthorizedCredentials)
+
+Get all posts a user has submitted.
+"""
 function submitted(user::User, ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(user.name)/submitted", ac))
 end
 
-# get total number of subscribers for a subreddit by name
+"""
+    subscribers(sub::AbstractString, ac::AuthorizedCredentials)
+
+Get total number of subscribers for a subreddit by name.
+"""
 function subscribers(sub::AbstractString, ac::AuthorizedCredentials)
     about(Subreddit(sub), ac)["data"]["subscribers"]
 end
 
-# get total number of subscribers for a subreddit with Subreddit type
+"""
+    subscribers(sub::Subreddit, ac::AuthorizedCredentials)
+
+Get total number of subscribers for a subreddit with Subreddit type.
+"""
 function subscribers(sub::Subreddit, ac::AuthorizedCredentials)
     about(sub, ac)["data"]["subscribers"]
 end
 
-# get token with Credentials
+"""
+    token(c::Credentials)
+
+Get token with Credentials.
+"""
 function token(c::Credentials)
     token(c.id, c.secret, c.username, c.password)
 end
 
-# get token with client_id, client_secret, username, and password
-function token(id::AbstractString, secret::AbstractString,
-    username::AbstractString, password::AbstractString)
+"""
+token(id::AbstractString,
+      secret::AbstractString,
+      username::AbstractString,
+      password::AbstractString)
+
+Get token with client_id, client_secret, username, and password.
+"""
+function token(id::AbstractString,
+               secret::AbstractString,
+               username::AbstractString,
+               password::AbstractString)
     auth = encode("$(id):$(secret)")
     resp = HTTP.request("POST", REDDIT_URL*"/api/v1/access_token",
         ["Authorization" => "Basic $(auth)"],
@@ -230,12 +357,20 @@ function token(id::AbstractString, secret::AbstractString,
     JSON.parse(body)["access_token"]
 end
 
-# get all trophies for current user
+"""
+    trophies(ac::AuthorizedCredentials)
+
+Get all trophies for current user.
+"""
 function trophies(ac::AuthorizedCredentials)
     JSON.parse(get("/api/v1/me/trophies", ac))
 end
 
-# get all posts a user has upvoted
+"""
+    upvoted(ac::AuthorizedCredentials)
+
+Get all posts a user has upvoted.
+"""
 function upvoted(ac::AuthorizedCredentials)
     JSON.parse(get("/user/$(ac.username)/upvoted", ac))
 end
