@@ -1,4 +1,7 @@
+
 # Reddit.jl
+[![Build Status](https://travis-ci.org/kennethberry/Reddit.jl.svg?branch=master)](https://travis-ci.org/kennethberry/Reddit.jl)
+
 Reddit API wrapper for Julia.
 
 ## Prerequisites
