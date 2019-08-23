@@ -3,9 +3,9 @@ v 0.1.x
 ✔ script application authorization & access_token retrieval
 ✔ user info requests
 ☐ subreddit info requests
-☐ thread posting and editing
 ☐ comment posting and editing
 ☐ private messaging
 ☐ wiki
 ☐ moderation
 ☐ flair
+☐ code examples
