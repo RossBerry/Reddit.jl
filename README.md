@@ -11,9 +11,13 @@ Reddit API wrapper for Julia.
 
 **User Agent** - A user agent is a unique identifier that helps Reddit determine the source of network requests. To use Reddit’s API, you need a unique and descriptive user agent.
 <br>
-The recommended format is: `<platform>:<app ID>:<version string> (by /u/<Reddit username>)`.
+The recommended format is:
 <br>
-For example: `android:com.example.myredditapp:v1.2.3 (by /u/kemitche)`.
+`<platform>:<app ID>:<version string> (by /u/<Reddit username>)`.
+<br>
+For example:
+<br>
+`android:com.example.myredditapp:v1.2.3 (by /u/kemitche)`.
 <br>
 Read more about user-agents at [Reddit’s API wiki page](https://github.com/reddit/reddit/wiki/API).
 
@@ -85,7 +89,7 @@ end
 ```julia
 authcreds = authorize(creds)
 ```
-The `token()` function can be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
+The `token()` function can also be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
 ```julia
 accesstoken = token(creds)
 ```
@@ -99,4 +103,22 @@ mykarma = karma(authcreds)
 
 # get number of subscribers for /r/julia
 subcount = subscribers("Julia", authcreds)
+
+# get Array of user's friends
+f = friends(authcreds)
+
+```
+A set of `AuthorizedCredentials` can also be set as the default credentials using the `default!()` function.  When the default credentials are set, the same API call functions can be used without specifying the credentials to use.
+```julia
+# get current user identity information
+myinfo = me()
+
+# get karma breakdown for current user
+mykarma = karma()
+
+# get number of subscribers for /r/julia
+subcount = subscribers("Julia")
+
+# get Array of user's friends
+f = friends()
 ```
