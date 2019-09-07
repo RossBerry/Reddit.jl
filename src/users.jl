@@ -464,6 +464,39 @@ function submitted(user::User, a::Authorized)
 end
 
 """
+    submittext(sub::Subreddit,
+               title::AbstractString,
+               text::AbstractString;
+               replies=true)
+
+Submit a text post to a Subreddit using the defalut credentials.
+"""
+function submittext(sub::Subreddit,
+                    title::AbstractString,
+                    body::AbstractString;
+                    replies=true)
+    submit(sub, title, body, default(), replies=replies)
+end
+
+"""
+    submit(sub::Subreddit,
+           title::AbstractString,
+           text::AbstractString,
+           a::Authorized;
+           replies=true)
+
+Submit a text post to a Subreddit.
+"""
+function submit(sub::Subreddit,
+                title::AbstractString,
+                body::AbstractString,
+                a::Authorized;
+                replies=true)
+    body = "api_type=json&sr=$(sub.name)&title=$(title)&kind=self&text=$(text)&sendreplies=$(replies)"
+    JSON.parse(post("/api/submit", body, a))
+end
+
+"""
     trophies()
 
 Get all trophies for default user(s).
