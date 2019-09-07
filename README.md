@@ -2,7 +2,7 @@
 # Reddit.jl
 [![Build Status](https://travis-ci.org/kennethberry/Reddit.jl.svg?branch=master)](https://travis-ci.org/kennethberry/Reddit.jl)
 
-Reddit API wrapper for Julia.
+Reddit API wrapper for Julia. This package is still a work in progress, and most of the planned functionality is yet to be implemented.
 
 ## Prerequisites
 **Reddit account** - A Reddit account is required to access Reddit's API.  Create one at [reddit.com](https://reddit.com).
@@ -23,34 +23,24 @@ Read more about user-agents at [Reddit’s API wiki page](https://github.com/red
 
 
 ## Installation
-This package can be installed using Pkg:
+The package can be installed with Julia's package manager,
+either by using the Pkg REPL mode (press `]` to enter):
+```
+pkg> add Reddit
+```
+or by using Pkg functions
 ```julia
-using Pkg
-Pkg.add("Reddit")
+julia> using Pkg; Pkg.add("Reddit")
 ```
 
-## Project Status
-This package is new and most of the planned functionality is yet to be implemented.
 
 ## Usage
-The `Reddit` module contains a `Credentials` type:
-```julia
-struct Credentials <: AbstractCredentials
-    id::String
-    secret::String
-    useragent::String
-    username::String
-    password::String
-end
-```
-
-The `id`, `secret`, and `useragent` fields correspond to the client ID, client secret, and user agent mentioned above in the prerequisites section. The `username` and `password` fields correspond to the username and password of the user associated with the script application.
-
-Credentials can be manually created with Strings entered into the fields:
+The Reddit script application and user account credentials mentioned in the prerequisites section can be used to create a `Credentials` object:
 ```julia
 creds = Credentials("CLIENT_ID", "CLIENT_SECRET", "USER_AGENT", "USER_NAME", "PASSWORD")
 ```
-The information required to create `Credentials` can be stored in an ini file. The default config file contains two clients named client1 and client2, with placeholders for each client's information.
+
+The information required to create `Credentials` can be stored in an ini file. The example config file, [config.ini](/config/config.ini), contains two example clients named **client1** and **client2**, with placeholders for the information.
 ```
 [client1]
 client_id=CLIENT_ID_1
@@ -66,59 +56,83 @@ user_agent=USER_AGENT_2
 password=PASSWORD_2
 username=USER_NAME_2
 ```
-The `credentials()` function can be used to generate `Credentials` from an ini file.
+The `readconfig()` function can be used to read credentials information from an ini file.
 ```julia
 # read credentials from default config.ini
-creds = credentials("client")
+creds = readconfig("CLIENT_NAME")
 
 # read credentials from an alternate ini
-creds = credentials("CLIENT_NAME", "PATH/TO/ALTERNATE.ini")
+creds = readconfig("CLIENT_NAME", "PATH/TO/ALTERNATE.ini")
 ```
 
-In order to access Reddit's API, the `Credentials` need to be authorized to receive an access token.  The `authorize()` function can be used with `Credentials` to get an `AuthorizedCredentials` type, which contains the same fields as `Credentials` with the addition of a `token` field.
-```julia
-struct AuthorizedCredentials <: AbstractCredentials
-    id::String
-    secret::String
-    useragent::String
-    username::String
-    password::String
-    token::String
-end
+In order to access Reddit's API, the `Credentials` need to be authorized. The `authorize()` function can be used with `Credentials` to get an `Authorized` type, which contains the same fields as `Credentials` with the addition of a `token` representing the Oauth access token needed to interact with most of Reddit's API.
 ```
 ```julia
-authcreds = authorize(creds)
+auth = authorize(creds)
 ```
-The `token()` function can also be called with `Credentials` to get the access token without creating an `AuthorizedCredentials` type.
+The `token()` function can also be called with `Credentials` to get the access token without creating an `Authorized` type.
 ```julia
 accesstoken = token(creds)
 ```
-The `AuthorizedCredentials` can then be used in the various API call functions:
+The `Authorized` credentials can then be used in the various API call functions included in this project.
+
+### Examples
+Get information about user account used to create the script application.
 ```julia
-# get current user identity information
-myinfo = me(authcreds)
-
-# get karma breakdown for current user
-mykarma = karma(authcreds)
-
-# get number of subscribers for /r/julia
-subcount = subscribers("Julia", authcreds)
-
-# get Array of user's friends
-f = friends(authcreds)
-
+myinfo = me(auth)
 ```
-A set of `AuthorizedCredentials` can also be set as the default credentials using the `default!()` function.  When the default credentials are set, the same API call functions can be used without specifying the credentials to use.
+
+Get karma breakdown for user account used to create the script application.
 ```julia
-# get current user identity information
+mykarma = karma(auth)
+```
+
+Get the number of subsribers for /r/Julia
+```julia
+subcount = subscribers("Julia", auth)
+```
+
+Get an array of friends for the user account associated with the script application.
+```julia
+f = friends(auth)
+```
+
+An `Authorized` object can also be set as the default using the `default!()` function.  When the default credentials are set, the same API call functions can be used without specifying the `Authorized` to use.
+```julia
+default!(auth)
+
 myinfo = me()
 
-# get karma breakdown for current user
 mykarma = karma()
 
-# get number of subscribers for /r/julia
-subcount = subscribers("Julia")
+subcount = subscribers(Subreddit("Julia"))
 
-# get Array of user's friends
 f = friends()
+```
+
+Get comments made by users.
+```julia
+# get comments made by default user
+mycomments = comments()
+
+# get comments made by /user/_____USER_NAME_____
+theircomments = comments(User("_____USER_NAME_____"))
+```
+
+The Reddit API will only return up to 1000 items in a listing, so the `comments()` function will return a max of 1000 comments.  The number of comments to fetch and the sorting can be specified with the `count` and `sort` parameters.
+```julia
+# get top 100 comments by /user/_____USER_NAME_____
+topcomments = comments(User("_____USER_NAME_____"), count=100, sort="top")
+```
+
+Get the body text of user's latest comment. Default sorting is by new.
+```julia
+text = comments(User("_____USER_NAME_____"), count=1)[1]["body"]
+```
+
+A simple script that replies to a user's latest comment
+```julia
+using Reddit
+default!(authorize(readconfig("CLIENT", "PATH/TO/ALT/CONFIG.ini")))
+reply(comments(User("_____USER_NAME_____"), count=1)[1]["name"], "Hello 👋"
 ```
