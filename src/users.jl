@@ -62,29 +62,6 @@ function blocked(a::Authorized)
 end
 
 """
-    comment(parent::AbstractString, text::AbstractString)
-
-Make a new comment as default user(s).
-"""
-function comment(parent::AbstractString, text::AbstractString)
-    comment(parent, text, default())
-end
-
-"""
-    comment(parent::AbstractString,
-            text::AbstractString,
-            a::Authorized)
-
-Make a new comment.
-"""
-function comment(parent::AbstractString,
-                 text::AbstractString,
-                 a::Authorized)
-    body = "api_type=json&text=$(text)&thing_id=$(parent)"
-    JSON.parse(post("/api/comment", body, a))
-end
-
-"""
     comments(; count=nothing, sort="new")
 
 Get all comments by default user(s).
@@ -383,6 +360,25 @@ Get all preferences for current user.
 """
 function preferences(a::Authorized)
     JSON.parse(get("/api/v1/me/prefs", a))
+end
+
+"""
+    reply(parent::AbstractString, text::AbstractString)
+
+Reply to a comment by name, as default user(s).
+"""
+function reply(parent::AbstractString, text::AbstractString)
+    reply(parent, text, default())
+end
+
+"""
+    reply(parent::AbstractString, text::AbstractString, a::Authorized)
+
+Reply to a comment by name.
+"""
+function reply(parent::AbstractString, text::AbstractString, a::Authorized)
+    body = "api_type=json&text=$(text)&thing_id=$(parent)"
+    JSON.parse(post("/api/comment", body, a))
 end
 
 """
