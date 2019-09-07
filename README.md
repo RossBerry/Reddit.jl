@@ -56,6 +56,7 @@ user_agent=USER_AGENT_2
 password=PASSWORD_2
 username=USER_NAME_2
 ```
+
 The `readconfig()` function can be used to read credentials information from an ini file.
 ```julia
 # read credentials from default config.ini
@@ -66,15 +67,17 @@ creds = readconfig("CLIENT_NAME", "PATH/TO/ALTERNATE.ini")
 ```
 
 In order to access Reddit's API, the `Credentials` need to be authorized. The `authorize()` function can be used with `Credentials` to get an `Authorized` type, which contains the same fields as `Credentials` with the addition of a `token` representing the Oauth access token needed to interact with most of Reddit's API.
-```
 ```julia
 auth = authorize(creds)
 ```
+
 The `token()` function can also be called with `Credentials` to get the access token without creating an `Authorized` type.
 ```julia
 accesstoken = token(creds)
 ```
+
 The `Authorized` credentials can then be used in the various API call functions included in this project.
+
 
 ### Examples
 Get information about user account used to create the script application.
@@ -134,5 +137,5 @@ A simple script that replies to a user's latest comment
 ```julia
 using Reddit
 default!(authorize(readconfig("CLIENT", "PATH/TO/ALT/CONFIG.ini")))
-reply(comments(User("_____USER_NAME_____"), count=1)[1]["name"], "Hello 👋"
+reply(comments(User("_____USER_NAME_____"), count=1)[1]["name"], "Hello 👋")
 ```
