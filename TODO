@@ -1,11 +1,31 @@
 v 0.1.x
-✔ read script application credentials from config file
-✔ script application authorization & access_token retrieval
-✔ user info requests
-☐ subreddit info requests
-☐ comment posting and editing
-☐ private messaging
-☐ wiki
+✔ read credentials from config file
+✔ authorization & access_token retrieval
+☐ get user info
+    ✔ comments
+    ✔ `about` info
+    ☐ submissions
+    ☐ karma breakdown
+    ☐ friends
+    ☐ gilded
+    ☐ downvoted
+    ☐ upvoted
+    ☐ hidden
+    ☐ preferences
+    ☐ overview
+    ☐ saved
+    ☐ trophies
+✔ reply to user comments
+✔ submit new post to a subreddit
+☐ delete comments
+☐ edit comments
+☐ edit posts
+☐ get subreddit info
+☐ save credentials to config.ini
+
+v 0.2.x
+☐ get private messages
+☐ send private messages
+☐ wiki editing
 ☐ moderation
 ☐ flair
-☐ code examples
