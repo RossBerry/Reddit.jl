@@ -146,10 +146,10 @@ function token(id::AbstractString,
                secret::AbstractString,
                username::AbstractString,
                password::AbstractString)
-    auth = encode("$(id):$(secret)")
+    auth = encode("$id:$secret")
     resp = HTTP.request("POST", REDDIT_URL*"/api/v1/access_token",
-        ["Authorization" => "Basic $(auth)"],
-        "grant_type=password&username=$(username)&password=$(password)")
+        ["Authorization" => "Basic $auth"],
+        "grant_type=password&username=$username&password=$password")
     body = String(resp.body)
     JSON.parse(body)["access_token"]
 end

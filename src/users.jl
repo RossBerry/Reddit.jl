@@ -104,7 +104,7 @@ function comments(user::User, a::Authorized;
     if count < 100
         limit = count
     end
-    api = "/user/$(user.name)/comments.json?sort=$(sort)&limit=$(limit)"
+    api = "/user/$(user.name)/comments.json?sort=$sort&limit=$limit"
     firstfetched = JSON.parse(get(api, a))
     for fetched in firstfetched["data"]["children"]
         push!(fetchedcomments, fetched["data"])
@@ -113,7 +113,7 @@ function comments(user::User, a::Authorized;
     fetchedcount += firstfetched["data"]["dist"]
     done = false
     while !done && fetchedcount < count
-        afterapi = api*"&after=$(after)&count=$(fetchedcount)"
+        afterapi = api*"&after=$after&count=$fetchedcount"
         nextfetched = JSON.parse(get(afterapi, a))
         for fetched in nextfetched["data"]["children"]
             push!(fetchedcomments, fetched["data"])
@@ -142,7 +142,7 @@ end
 Delete a comment by id.
 """
 function deletecomment(id::AbstractString, a::Authorized)
-    body = "id=$(id)"
+    body = "id=$id"
     JSON.parse(post("/api/del", body, a))
 end
 
@@ -233,7 +233,7 @@ end
 Get all threads a user has gilded.
 """
 function gilded(user::AbstractString, a::Authorized)
-    JSON.parse(get("/user/$(user)/gilded", a))["data"]["children"]
+    JSON.parse(get("/user/$user/gilded", a))["data"]["children"]
 end
 
 """
@@ -341,7 +341,7 @@ end
 Get an overview for a user.
 """
 function overview(user::AbstractString, a::Authorized)
-    JSON.parse(get("/user/$(user)/overview", a))["data"]["children"]
+    JSON.parse(get("/user/$user/overview", a))["data"]["children"]
 end
 
 """
@@ -377,7 +377,7 @@ end
 Reply to a comment by name.
 """
 function reply(parent::AbstractString, text::AbstractString, a::Authorized)
-    body = "api_type=json&text=$(text)&thing_id=$(parent)"
+    body = "api_type=json&text=$text&thing_id=$parent"
     JSON.parse(post("/api/comment", body, a))
 end
 
@@ -415,7 +415,85 @@ end
 Search for all users with usernames matching input string.
 """
 function searchusers(name::AbstractString, a::Authorized)
-    JSON.parse(post("/api/search_reddit_names", "query=$(name)", a))["names"]
+    JSON.parse(post("/api/search_reddit_names", "query=$name", a))["names"]
+end
+
+"""
+    submittext(sub::Subreddit,
+               title::AbstractString,
+               text::AbstractString;
+               ad=false,
+               flair_id="",
+               flair_text="",
+               kind="self",
+               nsfw=false,
+               resubmit=true,
+               sendreplies=true,
+               spoiler=false)
+
+Submit a post to a Subreddit using the defalut credentials.
+"""
+function submit(sub::Subreddit,
+                title::AbstractString,
+                body::AbstractString;
+                ad=false,
+                flair_id="",
+                flair_text="",
+                kind="self",
+                nsfw=false,
+                resubmit=true,
+                sendreplies=true,
+                spoiler=false)
+    submit(sub, title, body, default(), ad=ad, flair_id=flair_id,
+           flair_text=flair_text, kind=kind, nsfw=nsfw, resubmit=resubmit,
+           sendreplies=sendreplies, spoiler=spoiler)
+end
+
+"""
+    submit(sub::Subreddit,
+           title::AbstractString,
+           text::AbstractString,
+           a::Authorized;
+           ad=false,
+           flair_id="",
+           flair_text="",
+           kind="self",
+           nsfw=false,
+           resubmit=true,
+           sendreplies=true,
+           spoiler=false)
+
+Submit a post to a Subreddit.
+"""
+function submit(sub::Subreddit,
+                title::AbstractString,
+                body::AbstractString,
+                a::Authorized;
+                ad=false,
+                flair_id="",
+                flair_text="",
+                kind="self",
+                nsfw=false,
+                resubmit=true,
+                sendreplies=true,
+                spoiler=false)
+    params = "api_type=json&sr=$(sub.name)&title=$title&kind=$kind"
+    if kind == "self"
+        params *= "&text=$body"
+    elseif kind == "link"
+        params *= "&url=$body"
+    else
+        println("Error: Invalid kind")
+        return nothing
+    end
+    if flair_id != ""
+        params *= "&flair_id=$flair_id"
+    end
+    if flair_text != ""
+        params *= "&flair_text=$flair_text"
+    end
+    params *= "&ad=$ad&nsfw=$nsfw&sendreplies=$sendreplies&spoiler=$spoiler"
+    JSON.parse(post("/api/submit", params, a))
 end
 
 """
@@ -461,39 +539,6 @@ Get all posts a user has submitted.
 """
 function submitted(user::User, a::Authorized)
     JSON.parse(get("/user/$(user.name)/submitted", a))["data"]["children"]
-end
-
-"""
-    submittext(sub::Subreddit,
-               title::AbstractString,
-               text::AbstractString;
-               replies=true)
-
-Submit a text post to a Subreddit using the defalut credentials.
-"""
-function submittext(sub::Subreddit,
-                    title::AbstractString,
-                    body::AbstractString;
-                    replies=true)
-    submit(sub, title, body, default(), replies=replies)
-end
-
-"""
-    submit(sub::Subreddit,
-           title::AbstractString,
-           text::AbstractString,
-           a::Authorized;
-           replies=true)
-
-Submit a text post to a Subreddit.
-"""
-function submit(sub::Subreddit,
-                title::AbstractString,
-                body::AbstractString,
-                a::Authorized;
-                replies=true)
-    body = "api_type=json&sr=$(sub.name)&title=$(title)&kind=self&text=$(text)&sendreplies=$(replies)"
-    JSON.parse(post("/api/submit", body, a))
 end
 
 """
