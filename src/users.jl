@@ -400,36 +400,17 @@ function saved(a::Authorized)
 end
 
 """
-    searchusers(name::AbstractString)
-
-Search for all users with usernames matching input string, using credentials
-set as default.
-"""
-function searchusers(name::AbstractString)
-    searchusers(name, default())
-end
-
-"""
-    searchusers(name::AbstractString, a::Authorized)
-
-Search for all users with usernames matching input string.
-"""
-function searchusers(name::AbstractString, a::Authorized)
-    JSON.parse(post("/api/search_reddit_names", "query=$name", a))["names"]
-end
-
-"""
-    submittext(sub::Subreddit,
-               title::AbstractString,
-               text::AbstractString;
-               ad=false,
-               flair_id="",
-               flair_text="",
-               kind="self",
-               nsfw=false,
-               resubmit=true,
-               sendreplies=true,
-               spoiler=false)
+    submit(sub::Subreddit,
+           title::AbstractString,
+           text::AbstractString;
+           ad=false,
+           flair_id="",
+           flair_text="",
+           kind="self",
+           nsfw=false,
+           resubmit=true,
+           sendreplies=true,
+           spoiler=false)
 
 Submit a post to a Subreddit using the defalut credentials.
 """
