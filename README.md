@@ -92,7 +92,7 @@ mykarma = karma(auth)
 
 Get the number of subsribers for /r/Julia
 ```julia
-subcount = subscribers("Julia", auth)
+subcount = subscribers(Subreddit("Julia"), auth)
 ```
 
 Get an array of friends for the user account associated with the script application.
@@ -118,24 +118,35 @@ Get comments made by users.
 # get comments made by default user
 mycomments = comments()
 
-# get comments made by /user/_____USER_NAME_____
-theircomments = comments(User("_____USER_NAME_____"))
+# get comments made by /user/USERNAME
+theircomments = comments(User("USERNAME"))
 ```
 
 The Reddit API will only return up to 1000 items in a listing, so the `comments()` function will return a max of 1000 comments.  The number of comments to fetch and the sorting can be specified with the `count` and `sort` parameters.
 ```julia
-# get top 100 comments by /user/_____USER_NAME_____
-topcomments = comments(User("_____USER_NAME_____"), count=100, sort="top")
+# get top 100 comments by /user/USERNAME
+topcomments = comments(User("USERNAME"), count=100, sort="top")
+```
+Default sorting is by new. Other options are hot, top, and controversial.
+
+
+Get the text of a user's latest comment.
+```julia
+text = comments(User("USERNAME"), count=1)[1]["body"]
 ```
 
-Get the body text of user's latest comment. Default sorting is by new.
+Reply to a user's latest comment
 ```julia
-text = comments(User("_____USER_NAME_____"), count=1)[1]["body"]
+reply(comments(User("USERNAME"), count=1)[1]["name"], "REPLY TEXT")
 ```
 
-A simple script that replies to a user's latest comment
+Submit a new text post to a subreddit.
 ```julia
-using Reddit
-default!(authorize(readconfig("CLIENT", "PATH/TO/ALT/CONFIG.ini")))
-reply(comments(User("_____USER_NAME_____"), count=1)[1]["name"], "Hello 👋")
+submit(Subreddit("SUBREDDIT"), "TITLE", "BODY TEXT")
 ```
+
+Submit a new link post to a subreddit
+```julia
+submit(Subreddit("SUBREDDIT"), "TITLE", "URL", kind="link")
+```
+Default kind is "self" for text posts.
